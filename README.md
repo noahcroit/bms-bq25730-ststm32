@@ -8,8 +8,6 @@ The project consists of
 ![Alt text](board/img/board-fab.jpg)
 - `stm32`\
     BQ25730 C library based on arduino-stst32 (`stm32/lib/bq25730-ststm32`) + STM32F3disco example for BQ25730's host using PlatformIO framework.
-
-### Board images
 ![Alt text](board/img/testing-with-stm32f3disco.png)
 
 ### More to do
