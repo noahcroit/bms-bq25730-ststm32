@@ -3,6 +3,7 @@
 
 
 void i2c_write_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint8_t len) {
+#if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
     Wire.begin();
     Wire.beginTransmission(dev_addr);
     Wire.write(word_addr);
@@ -10,9 +11,11 @@ void i2c_write_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uin
         Wire.write(*(data+i));
     }
     Wire.endTransmission();
+#endif
 }
 
 void i2c_read_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint8_t len) {
+#if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
     Wire.begin();
     Wire.beginTransmission(dev_addr);
     Wire.write(word_addr);
@@ -22,6 +25,7 @@ void i2c_read_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint
         *(data+i) = Wire.read();
     }
     Wire.endTransmission();
+#endif
 }
 
 void bq25730_lowpwr_on(bq25730_config_t *cfg) {

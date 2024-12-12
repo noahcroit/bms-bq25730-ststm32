@@ -1,6 +1,11 @@
 #ifndef _BQ25730_STSTM32
 #define _BQ25730_STSTM32
 
+#define FRAMEWORK_ARDUINO   0
+#define FRAMEWORK_STM32CUBE 1
+#define FRAMEWORK_ZEPHYR    2
+#define SELECTED_FRAMEWORK  FRAMEWORK_ARDUINO
+
 #define BQ25730_DEFAULT_ADDR 0x6B
 #define ADDR_CHRGOPT0   0x00
 #define ADDR_CHRGOPT1   0x30
@@ -47,8 +52,10 @@
 
 
 
+#if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
 #include <Arduino.h>
 #include <Wire.h>
+#endif
 
 /* 
  * Struct for BQ25730 Configuration 
@@ -89,6 +96,13 @@ void bq25730_ibat_off(bq25730_config_t *cfg);
 void bq25730_read_ibat(bq25730_config_t *cfg, float *ibat_charge, float *ibat_discharge);
 float bq25730_read_iin(bq25730_config_t *cfg);
 
+// Choose to use delay() based on framework
+#if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
+#define delay(x)    delay(x)
+#elif SELECTED_FRAMEWORK == FRAMEWORK_STM32CUBE
+#define delay(x)    HAL_Delay(x)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -101,6 +115,5 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif
