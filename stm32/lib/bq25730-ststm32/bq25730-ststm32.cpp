@@ -28,6 +28,27 @@ void i2c_read_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint
 #endif
 }
 
+void bq25730_init(bq25730_config_t *cfg) {
+#if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
+    Wire.setSCL(cfg->pin_i2c_scl);
+    Wire.setSDA(cfg->pin_i2c_sda);
+#endif
+
+    // Disable Low-power & Disable watchdog on ChargeOption0
+    bq25730_set_watchdog(cfg);
+    bq25730_lowpwr_off(cfg);
+
+    // Enable ADC and set ADC conversion mode as continuous-mode
+    bq25730_adc_enable_all(cfg);
+    bq25730_adc_setmode(cfg);
+
+    // Enable IBAT buffer to measure battery current
+    bq25730_ibat_on(cfg);
+
+    // Set a new VSYSMIN value
+    bq25730_set_vsysmin(cfg);
+}
+
 void bq25730_lowpwr_on(bq25730_config_t *cfg) {
     uint8_t databuf[2];
     // Read current value of ChargeOption0
@@ -129,10 +150,10 @@ float bq25730_read_vsysmin(bq25730_config_t *cfg) {
     return (float)(VSYSMIN_LSB * databuf);
 }
 
-void bq25730_set_vsysmin(bq25730_config_t *cfg, float vsysmin) {
+void bq25730_set_vsysmin(bq25730_config_t *cfg) {
     uint8_t databuf;
     // Read current ADCVBUS
-    databuf = (uint8_t)(vsysmin / VSYSMIN_LSB);
+    databuf = (uint8_t)(cfg->vsysmin / VSYSMIN_LSB);
     i2c_write_registers(cfg->dev_addr, ADDR_VSYSMIN, &databuf, 1);
     delay(10);
 }

@@ -21,35 +21,30 @@ bq25730_config_t chip_cfg;
 
 
 void setup() {
-    // BQ25730 chip configuration
-    chip_cfg.dev_addr = BQ25730_DEFAULT_ADDR;
-    chip_cfg.adc_mode = ADC_CONV_CONT;
-    chip_cfg.watchdog_adj = WDTMR_ADJ_DISABLE;
-
-    // Use the serial monitor to view time/date output
+    // Use the serial monitor & Onboard LEDs
+    Serial.begin(115200);
     pinMode(LED_G, OUTPUT);
     pinMode(LED_R, OUTPUT);
     pinMode(LED_B, OUTPUT);
     pinMode(LED_O, OUTPUT);
-    Serial.begin(115200);
+
+    // Setup I2C and run scanner
     Wire.setSCL(PIN_SCL);
     Wire.setSDA(PIN_SDA);
     ndev = i2c_scan();
+
     if (ndev > 0) {
-        // Disable Low-power & Disable watchdog on ChargeOption0
-        bq25730_set_watchdog(&chip_cfg);
-        bq25730_lowpwr_off(&chip_cfg);
+        // BQ25730 chip configuration
+        chip_cfg.pin_i2c_sda = PIN_SDA;
+        chip_cfg.pin_i2c_scl = PIN_SCL;
+        chip_cfg.dev_addr = BQ25730_DEFAULT_ADDR;
+        chip_cfg.adc_mode = ADC_CONV_CONT;
+        chip_cfg.watchdog_adj = WDTMR_ADJ_DISABLE;
+        chip_cfg.rsr = RSNS_10MOHM;
+        chip_cfg.rac = RSNS_10MOHM;
+        chip_cfg.vsysmin = VSYSMIN_TARGET;
+        bq25730_init(&chip_cfg);
 
-        // Enable ADC and set ADC conversion mode as continuous-mode
-        bq25730_adc_enable_all(&chip_cfg);
-        bq25730_adc_setmode(&chip_cfg);
-        
-        // Enable IBAT buffer to measure battery current
-        bq25730_ibat_on(&chip_cfg);
-
-        // Set a new VSYSMIN value
-        bq25730_set_vsysmin(&chip_cfg, VSYSMIN_TARGET);
-        
         digitalWrite(LED_G, HIGH);
     }
     else{
@@ -115,7 +110,6 @@ uint8_t i2c_scan() {
                 Serial.print("0");
             Serial.print(address,HEX);
             Serial.println("  !");
-
             nDevices++;
         }
         else if (error==4)

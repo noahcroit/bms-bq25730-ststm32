@@ -66,19 +66,21 @@
 typedef struct
 {
     uint32_t i2c_freq;
-    uint8_t	i2c_sda_pin;
-    uint8_t	i2c_scl_pin;
+    uint8_t	pin_i2c_sda;
+    uint8_t	pin_i2c_scl;
     uint8_t dev_addr;
     uint8_t adc_mode;
     uint8_t watchdog_adj;
     uint8_t rsr;
     uint8_t rac;
+    float vsysmin;
 
 }bq25730_config_t;
 
 void i2c_write_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint8_t len);
 void i2c_read_registers(uint8_t dev_addr, uint8_t word_addr, uint8_t *data, uint8_t len);
 
+void bq25730_init(bq25730_config_t *cfg);
 void bq25730_lowpwr_on(bq25730_config_t *cfg);
 void bq25730_lowpwr_off(bq25730_config_t *cfg);
 void bq25730_set_watchdog(bq25730_config_t *cfg);
@@ -89,7 +91,7 @@ float bq25730_read_vbus(bq25730_config_t *cfg);
 float bq25730_read_vsys(bq25730_config_t *cfg);
 float bq25730_read_vbat(bq25730_config_t *cfg);
 float bq25730_read_vsysmin(bq25730_config_t *cfg);
-void bq25730_set_vsysmin(bq25730_config_t *cfg, float vsysmin);
+void bq25730_set_vsysmin(bq25730_config_t *cfg);
 void bq25730_set_rsense(bq25730_config_t *cfg);
 void bq25730_ibat_on(bq25730_config_t *cfg);
 void bq25730_ibat_off(bq25730_config_t *cfg);
