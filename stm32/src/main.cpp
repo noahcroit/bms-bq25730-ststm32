@@ -6,7 +6,8 @@
 #define LED_G       PE11
 #define LED_O       PE14
 #define LED_R       PE13
-#define VSYSMIN_TARGET (float)11.0
+#define VSYSMIN_TARGET  (float)11.0
+#define ICHRG_TARGET    (float)0.15
 
 /*
  * Function prototype
@@ -43,8 +44,11 @@ void setup() {
         chip_cfg.rsr = RSNS_10MOHM;
         chip_cfg.rac = RSNS_10MOHM;
         chip_cfg.vsysmin = VSYSMIN_TARGET;
+        chip_cfg.icharge = ICHRG_TARGET;
         bq25730_init(&chip_cfg);
-
+        
+        // Set charging current
+        //bq25730_set_chargecurrent(&chip_cfg);
         digitalWrite(LED_G, HIGH);
     }
     else{
