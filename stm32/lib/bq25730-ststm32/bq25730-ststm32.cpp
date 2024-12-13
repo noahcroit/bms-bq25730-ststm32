@@ -224,3 +224,19 @@ float bq25730_read_iin(bq25730_config_t *cfg) {
         return (float)(IIN_5MOHM_LSB * databuf);
     }
 }
+
+void bq25730_set_chargecurrent(bq25730_config_t *cfg) {
+    uint8_t databuf[2];
+    uint16_t word;
+    float icharge_lsb;
+    if (cfg->rsr == RSNS_10MOHM) {
+        icharge_lsb = ICHG_10MOHM_LSB; 
+    }
+    else if(cfg->rsr == RSNS_5MOHM) {
+        icharge_lsb = ICHG_5MOHM_LSB; 
+    }
+    word = (uint8_t)(cfg->icharge / icharge_lsb) << 6;
+    databuf[0] = (uint8_t)word;
+    databuf[1] = (uint8_t)(word >> 8);
+    i2c_write_registers(cfg->dev_addr, ADDR_CHRGCURR, databuf, 2);
+}

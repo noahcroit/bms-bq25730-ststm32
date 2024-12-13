@@ -49,7 +49,7 @@
 #define IDCHG_5MOHM_LSB (float)0.512
 #define IIN_10MOHM_LSB (float)0.05
 #define IIN_5MOHM_LSB (float)0.1
-
+#define IIN_10MOHM_LSB (float)0.05
 
 
 #if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
@@ -74,6 +74,8 @@ typedef struct
     uint8_t rsr;
     uint8_t rac;
     float vsysmin;
+    float vcharge;
+    float icharge;
 
 }bq25730_config_t;
 
@@ -97,6 +99,7 @@ void bq25730_ibat_on(bq25730_config_t *cfg);
 void bq25730_ibat_off(bq25730_config_t *cfg);
 void bq25730_read_ibat(bq25730_config_t *cfg, float *ibat_charge, float *ibat_discharge);
 float bq25730_read_iin(bq25730_config_t *cfg);
+void bq25730_set_chargecurrent(bq25730_config_t *cfg);
 
 // Choose to use delay() based on framework
 #if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
