@@ -150,16 +150,26 @@ float bq25730_read_vsysmin(bq25730_config_t *cfg) {
     return (float)(VSYSMIN_LSB * databuf);
 }
 
-void bq25730_set_vsysmin(bq25730_config_t *cfg) {
+bool bq25730_set_vsysmin(bq25730_config_t *cfg) {
     uint8_t databuf;
     // Read current ADCVBUS
     databuf = (uint8_t)(cfg->vsysmin / VSYSMIN_LSB);
+    if ((databuf > WORD_VSYSMIN_MAX) || (databuf < WORD_VSYSMIN_MIN)) {
+        return false;
+    }
     i2c_write_registers(cfg->dev_addr, ADDR_VSYSMIN, &databuf, 1);
     delay(10);
+    return true;
 }
 
-void bq25730_set_rsense(bq25730_config_t *cfg) {
+bool bq25730_set_rsense(bq25730_config_t *cfg) {
     uint8_t databuf;
+    if ((cfg->rsr != RSNS_10MOHM) || (cfg->rsr != RSNS_5MOHM)) {
+        return false;
+    }
+    if ((cfg->rac != RSNS_10MOHM) || (cfg->rac != RSNS_5MOHM)) {
+        return false;
+    }
     // Read current value of ChargeOption1 (2nd byte)
     i2c_read_registers(cfg->dev_addr, ADDR_CHRGOPT1+1, &databuf, 1);
     delay(10);
@@ -169,6 +179,7 @@ void bq25730_set_rsense(bq25730_config_t *cfg) {
     databuf |= (cfg->rac << CHRGOPT1_RSNS_RAC);
     i2c_write_registers(cfg->dev_addr, ADDR_CHRGOPT1+1, &databuf, 1);
     delay(10);
+    return true;
 }
 
 void bq25730_ibat_on(bq25730_config_t *cfg) {
@@ -225,7 +236,7 @@ float bq25730_read_iin(bq25730_config_t *cfg) {
     }
 }
 
-void bq25730_set_chargecurrent(bq25730_config_t *cfg) {
+bool bq25730_set_icharge(bq25730_config_t *cfg) {
     uint8_t databuf[2];
     uint16_t word;
     float icharge_lsb;
@@ -235,8 +246,28 @@ void bq25730_set_chargecurrent(bq25730_config_t *cfg) {
     else if(cfg->rsr == RSNS_5MOHM) {
         icharge_lsb = ICHG_5MOHM_LSB; 
     }
+    else{
+        return false;
+    }
     word = (uint8_t)(cfg->icharge / icharge_lsb) << 6;
+    if(word > WORD_ICHRG_MAX){
+        return false;
+    }
     databuf[0] = (uint8_t)word;
     databuf[1] = (uint8_t)(word >> 8);
     i2c_write_registers(cfg->dev_addr, ADDR_CHRGCURR, databuf, 2);
+    return true;
+}
+
+bool bq25730_set_vcharge(bq25730_config_t *cfg) {
+    uint8_t databuf[2];
+    uint16_t word;
+    word = (uint16_t)(cfg->vcharge / VCHRG_LSB) << 3;
+    if((word > WORD_VCHRG_MAX) || (word < WORD_VCHRG_MIN)){
+        return false; 
+    }
+    databuf[0] = (uint8_t)word;
+    databuf[1] = (uint8_t)(word >> 8);
+    i2c_write_registers(cfg->dev_addr, ADDR_CHRGVOLT, databuf, 2);
+    return true;
 }

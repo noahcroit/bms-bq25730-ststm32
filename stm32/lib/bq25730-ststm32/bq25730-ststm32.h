@@ -34,8 +34,8 @@
 #define ADCOPT_ADC_START    6
 #define ADC_CONV_ONESHOT    0
 #define ADC_CONV_CONT       1
-#define RSNS_10MOHM         0
-#define RSNS_5MOHM          1
+#define RSNS_10MOHM         10
+#define RSNS_5MOHM          5
 
 #define VBUS_LSB (float)0.096
 #define VSYS_LSB (float)0.064
@@ -50,7 +50,12 @@
 #define IIN_10MOHM_LSB (float)0.05
 #define IIN_5MOHM_LSB (float)0.1
 #define IIN_10MOHM_LSB (float)0.05
-
+#define VCHRG_LSB (float)0.008
+#define WORD_ICHRG_MAX (uint16_t)0x1FC0
+#define WORD_VCHRG_MAX (uint16_t)0x59D8
+#define WORD_VCHRG_MIN (uint16_t)0x400
+#define WORD_VSYSMIN_MAX (uint8_t)0xE6
+#define WORD_VSYSMIN_MIN (uint8_t)0x0A
 
 #if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
 #include <Arduino.h>
@@ -93,13 +98,14 @@ float bq25730_read_vbus(bq25730_config_t *cfg);
 float bq25730_read_vsys(bq25730_config_t *cfg);
 float bq25730_read_vbat(bq25730_config_t *cfg);
 float bq25730_read_vsysmin(bq25730_config_t *cfg);
-void bq25730_set_vsysmin(bq25730_config_t *cfg);
-void bq25730_set_rsense(bq25730_config_t *cfg);
+bool bq25730_set_vsysmin(bq25730_config_t *cfg);
+bool bq25730_set_rsense(bq25730_config_t *cfg);
 void bq25730_ibat_on(bq25730_config_t *cfg);
 void bq25730_ibat_off(bq25730_config_t *cfg);
 void bq25730_read_ibat(bq25730_config_t *cfg, float *ibat_charge, float *ibat_discharge);
 float bq25730_read_iin(bq25730_config_t *cfg);
-void bq25730_set_chargecurrent(bq25730_config_t *cfg);
+bool bq25730_set_icharge(bq25730_config_t *cfg);
+bool bq25730_set_vcharge(bq25730_config_t *cfg);
 
 // Choose to use delay() based on framework
 #if SELECTED_FRAMEWORK == FRAMEWORK_ARDUINO
