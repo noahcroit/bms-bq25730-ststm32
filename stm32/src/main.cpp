@@ -7,7 +7,7 @@
 #define LED_O       PE14
 #define LED_R       PE13
 #define VSYSMIN_TARGET  (float)11.0
-#define ICHRG_TARGET    (float)0.15
+#define ICHRG_TARGET    (float)0.2
 
 /*
  * Function prototype
@@ -48,7 +48,7 @@ void setup() {
         bq25730_init(&chip_cfg);
         
         // Set charging current
-        //bq25730_set_chargecurrent(&chip_cfg);
+        bq25730_set_icharge(&chip_cfg);
         digitalWrite(LED_G, HIGH);
     }
     else{
@@ -79,7 +79,7 @@ void loop() {
         Serial.print("v, ");
         Serial.print("VBAT=");
         Serial.print(vbat);
-        Serial.print("v, ");
+        Serial.println("v");
         Serial.print("IIN=");
         Serial.print(iin);
         Serial.print("A, ");
@@ -89,6 +89,7 @@ void loop() {
         Serial.print("IDCHG=");
         Serial.print(ibat_discharge);
         Serial.println("A");
+        Serial.println("\n");
     }
     delay(5000);
 }
